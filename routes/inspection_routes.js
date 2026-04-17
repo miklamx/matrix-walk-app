@@ -8,7 +8,8 @@ const {
   processPlumbingData, 
   processSystemsData, 
   processPaintData, 
-  processStructuralData 
+  processStructuralData,
+  generateFinalSummary 
 } = require('../models');
 
 async function inspectionRoutes(fastify, options) {
@@ -33,7 +34,6 @@ async function inspectionRoutes(fastify, options) {
     const { room_type, data } = request.body;
     let processedData;
 
-    // Directing data to the correct "Straightforward Partner" logic
     switch (room_type) {
       case 'Kitchen':
         processedData = processKitchenData(data);
@@ -64,10 +64,12 @@ async function inspectionRoutes(fastify, options) {
     return { status: 'Got it!', saved: result.rows[0] };
   });
 
-  // GET: Fetch the Full Unit Summary (The Signal to finish)
-  fastify.get('/inspections/:id/summary', async (request, reply) => {
+  // GET: Final Matrix Summary
+  // This route triggers the finalize_logic to aggregate and total everything
+  fastify.get('/inspections/:id/finalize', async (request, reply) => {
     const { id } = request.params;
     
+    // 1. Fetch all raw data for this inspection
     const query = `
       SELECT room_type, specifications 
       FROM room_data 
@@ -76,7 +78,15 @@ async function inspectionRoutes(fastify, options) {
     `;
     
     const result = await fastify.pg.query(query, [id]);
-    return { inspection_id: id, total_items: result.rowCount, items: result.rows };
+    
+    // 2. Run the data through the Finalize Engine
+    const summaryReport = generateFinalSummary(result.rows);
+    
+    return { 
+      inspection_id: id, 
+      generated_at: new Date().toISOString(),
+      report: summaryReport 
+    };
   });
 }
 

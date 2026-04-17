@@ -1,6 +1,6 @@
 /**
  * Models Entry Point (index.js)
- * This file consolidates all room-specific logic into a single export.
+ * Consolidates all room-specific logic.
  */
 
 const { processKitchenData } = require('./kitchen_logic');

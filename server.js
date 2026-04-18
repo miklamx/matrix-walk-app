@@ -1,47 +1,44 @@
-/**
- * server.js
- * The core engine for Full Stack Customs Matrix Walk App.
- */
-
-const fastify = require('fastify')({ 
-  logger: true 
-});
+const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-// 1. Register Postgres Plugin
-// This connects the backend to your database using the .env file
-fastify.register(require('@fastify/postgres'), {
-  connectionString: process.env.DATABASE_URL
-});
+// Import your route "extension"
+const inspectionRoutes = require('./routes/inspection_routes');
 
-// 2. Register CORS
-// Allows your "Cool UI" (frontend) to communicate with this backend
-fastify.register(require('@fastify/cors'), { 
-  origin: true 
-});
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-// 3. Register our Inspection Routes
-// This pulls in all the logic and API endpoints we created
-fastify.register(require('./routes/inspection_routes'));
+// Middleware
+app.use(cors()); // The "security badge" that lets Vercel talk to Render
+app.use(express.json()); // Lets the server read the data you send from your phone
 
-// 4. Health Check Route
-fastify.get('/health', async (request, reply) => {
-  return { status: 'Full Stack Customs Backend: Operational' };
-});
-
-// 5. Start the Server
-const start = async () => {
-  try {
-    // Port 3000 is standard, but will use environment variable if set
-    await fastify.listen({ 
-      port: process.env.PORT || 3000, 
-      host: '0.0.0.0' 
-    });
-    console.log(`Matrix Walk API is live at http://localhost:${process.env.PORT || 3000}`);
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
+// The Database Connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
   }
-};
+});
 
-start();
+// Test the database connection
+pool.connect((err) => {
+  if (err) {
+    console.error('Database connection error', err.stack);
+  } else {
+    console.log('Connected to the Matrix Database');
+  }
+});
+
+// "Plug in" the routes
+// This makes sure your save buttons actually work!
+app.use('/api', inspectionRoutes);
+
+// A simple health check to make sure the server is alive
+app.get('/', (req, res) => {
+  res.send('Matrix Walk Server is Running!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

@@ -10,15 +10,9 @@ function App() {
 
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJRzqHbAOmX7FSt88NLqq0_np4T7Ux5MBg7hGzRPZwiPbZkHMbbm49nmcAR9evpguDrg/exec';
 
-  const handleSaveItem = async (details) => {
-    const newItem = {
-      location: details.location || 'General',
-      width: details.width || '0',
-      height: details.height || '0',
-      notes: details.notes || ''
-    };
-
+  const handleSaveItem = async (newItem) => {
     try {
+      // 1. Send to Google Sheets
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors', 
@@ -26,6 +20,7 @@ function App() {
         body: JSON.stringify(newItem),
       });
 
+      // 2. Update the visual list below
       setWalkData(prev => [...prev, newItem]);
       setStatus('Saved!');
       setTimeout(() => setStatus('Connected'), 2000);
@@ -38,30 +33,34 @@ function App() {
   return (
     <div className="max-w-md mx-auto p-4 bg-gray-50 min-h-screen font-sans">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-blue-900 text-center">Full Stack Customs</h1>
-        <div className="flex justify-between items-center bg-white p-3 rounded shadow-sm border mt-2">
-          <span className="font-semibold">Matrix Walk Live</span>
+        <h1 className="text-3xl font-black text-blue-900 text-center">Full Stack Customs</h1>
+        <div className="flex justify-between items-center bg-white p-3 rounded shadow-sm border mt-4">
+          <span className="font-bold">Matrix Walk Live</span>
           <span className="text-green-600 font-bold">● {status}</span>
         </div>
       </header>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         <KitchenForm onSave={handleSaveItem} />
         <BathroomForm onSave={handleSaveItem} />
         <SystemsForm onSave={handleSaveItem} />
         <StructuralForm onSave={handleSaveItem} />
       </div>
 
-      <div className="mt-8 p-4 bg-white rounded shadow-inner border">
-        <h2 className="font-bold border-b mb-3">Running List (W × H)</h2>
-        {walkData.length === 0 ? <p className="text-gray-400 italic text-sm">No measurements yet.</p> : (
-          <ul className="text-sm space-y-1">
+      <div className="mt-10 p-4 bg-white rounded-lg shadow-md border-t-4 border-blue-900">
+        <h2 className="font-black text-xl mb-4 border-b pb-2">Running List (W × H)</h2>
+        {walkData.length === 0 ? (
+          <p className="text-gray-400 italic">No items recorded in this session yet.</p>
+        ) : (
+          <div className="space-y-3">
             {walkData.map((item, index) => (
-              <li key={index} className="border-b pb-1 last:border-0">
-                <strong>{item.location}:</strong> {item.width} × {item.height}
-              </li>
+              <div key={index} className="bg-gray-50 p-3 rounded border text-sm">
+                <div className="font-bold text-blue-800">{item.location}</div>
+                <div className="text-lg font-mono">{item.width} × {item.height}</div>
+                {item.notes && <div className="text-gray-500 text-xs mt-1 italic">{item.notes}</div>}
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>

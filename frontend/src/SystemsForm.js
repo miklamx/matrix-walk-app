@@ -1,32 +1,34 @@
 import React, { useState } from 'react';
 
 const SystemsForm = ({ onSave }) => {
-  const [width, setWidth] = useState('');
-  const [height, setHeight] = useState('');
-  const [type, setType] = useState('');
+  const [fuel, setFuel] = useState('GAS');
+  const [capacity, setCapacity] = useState('40 Gal');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
-      location: `System: ${type}`,
-      width: width,
-      height: height,
-      notes: 'Mechanical/Plumbing'
+      location: `System: Water Heater (${fuel})`,
+      width: capacity,
+      height: 'N/A',
+      notes: 'Mechanical Check'
     });
-    setWidth(''); setHeight(''); setType('');
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow border-l-4 border-blue-400">
-      <h3 className="font-bold text-lg mb-2">⚙️ Systems</h3>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input type="text" placeholder="System Type (WH, HVAC)" value={type} className="w-full p-2 border rounded" onChange={(e) => setType(e.target.value)} />
-        <div className="grid grid-cols-2 gap-2">
-          <input type="text" placeholder="Width" value={width} className="p-2 border rounded" onChange={(e) => setWidth(e.target.value)} />
-          <input type="text" placeholder="Height" value={height} className="p-2 border rounded" onChange={(e) => setHeight(e.target.value)} />
+    <div className="bg-white p-5 rounded shadow border-l-8 border-blue-500">
+      <h3 className="font-bold text-xl mb-4">⚙️ Systems</h3>
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <button onClick={() => setFuel('GAS')} className={`flex-1 p-3 rounded font-bold ${fuel === 'GAS' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>GAS</button>
+          <button onClick={() => setFuel('ELEC')} className={`flex-1 p-3 rounded font-bold ${fuel === 'ELEC' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>ELEC</button>
         </div>
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded font-bold">SAVE SYSTEMS</button>
-      </form>
+        <select value={capacity} className="w-full p-3 border-2 rounded" onChange={(e) => setCapacity(e.target.value)}>
+          <option>40 Gal</option>
+          <option>50 Gal</option>
+          <option>Tankless</option>
+        </select>
+        <button onClick={handleSubmit} className="w-full bg-blue-700 text-white p-4 rounded-xl font-black shadow-lg uppercase">SAVE SYSTEM DATA</button>
+      </div>
     </div>
   );
 };

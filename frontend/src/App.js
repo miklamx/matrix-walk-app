@@ -10,24 +10,23 @@ function App() {
 
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJRzqHbAOmX7FSt88NLqq0_np4T7Ux5MBg7hGzRPZwiPbZkHMbbm49nmcAR9evpguDrg/exec';
 
-  const handleSaveItem = async (dataPackage) => {
-    try {
-      // 1. Immediately update the screen list
-      setWalkData(prev => [...prev, dataPackage]);
-      setStatus('Saving...');
+  const handleSaveItem = async (newItem) => {
+    // This makes the counts appear in the app list immediately
+    setWalkData(prev => [...prev, newItem]);
+    setStatus('Saving...');
 
-      // 2. Send the package to Google Sheets
+    try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors', 
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataPackage),
+        body: JSON.stringify(newItem),
       });
 
       setStatus('Saved!');
       setTimeout(() => setStatus('Connected'), 2000);
     } catch (error) {
-      console.error("Transmission Error:", error);
+      console.error("Save Error:", error);
       setStatus('Error');
     }
   };
@@ -61,6 +60,7 @@ function App() {
                 <div className="text-lg font-mono">{item.width} × {item.height}</div>
                 {item.notes && <div className="text-gray-500 text-xs mt-1 italic">{item.notes}</div>}
               </div>
+            </div>
             ))}
           </div>
         )}

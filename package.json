@@ -1,9 +1,0 @@
-{
-  "name": "matrix-walk-app",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "install-frontend": "cd frontend && npm install",
-    "build-frontend": "cd frontend && npm run build"
-  }
-}

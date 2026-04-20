@@ -11,7 +11,7 @@ function App() {
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJRzqHbAOmX7FSt88NLqq0_np4T7Ux5MBg7hGzRPZwiPbZkHMbbm49nmcAR9evpguDrg/exec';
 
   const handleSaveItem = async (newItem) => {
-    // This makes the counts appear in the app list immediately
+    // Immediately show the data in the running list
     setWalkData(prev => [...prev, newItem]);
     setStatus('Saving...');
 
@@ -60,7 +60,6 @@ function App() {
                 <div className="text-lg font-mono">{item.width} × {item.height}</div>
                 {item.notes && <div className="text-gray-500 text-xs mt-1 italic">{item.notes}</div>}
               </div>
-            </div>
             ))}
           </div>
         )}

@@ -4,7 +4,7 @@ import KitchenForm from './KitchenForm.jsx';
 function App() {
   const [walkData, setWalkData] = useState([]);
   const [status, setStatus] = useState('Connected');
-  const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbxJRzqHbAOmX7FSt88NLqq0_np4T7Ux5MBg7hGzRPZwiPbZkHMbbm49nmcAR9evpguDrg/exec';
+  const GOOGLE_URL = 'https://script.google.com/macros/s/AKfycbyfnVxpFXMVrqd39j-WhCLr9O-pUMPocPv3snk5RHv4sAFBFhlIluTIT1d4iszeKcv0xg/exec';
 
   const handleSave = async (data) => {
     setWalkData(prev => [...prev, data]);
